@@ -5,7 +5,7 @@ use warnings;
 use File::Basename;
 use File::Spec;
 
-use Test::Simple tests => 10;
+use Test::Simple tests => 11;
 
 if (-d File::Spec->catdir(dirname(__FILE__), '..', 'dh')) {
     # Test against local checkout
@@ -32,3 +32,6 @@ ok(make_pep440_compliant('1.1ubuntu1') eq '1.1+ubuntu1', 'Ubuntu version');
 ok(make_pep440_compliant('1.1.4build1') eq '1.1.4+build1', 'Ubuntu no change rebuild');
 ok(make_pep440_compliant('2.22.1ubuntu1~bpo20.04.1') eq '2.22.1+ubuntu1.bpo20.04.1', 'Ubuntu backport version');
 ok(make_pep440_compliant('2.17.12ubuntu1.1') eq '2.17.12+ubuntu1.1', 'Ubuntu security update');
+
+# Setuptools untagged
+ok(make_pep440_compliant('0.1.dev516+g595c8c1') eq '0.1.dev516+g595c8c1', 'Setuptools untagged');

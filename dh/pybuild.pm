@@ -99,7 +99,7 @@ sub clean {
 # Convert the version into a PEP440 compliant version.
 sub make_pep440_compliant {
 	my $version = shift;
-	my (undef, $public, $local) = split(qr/^([0-9][0-9.]*(?:(?:a|b|rc|\.post|\.dev)[0-9]+)*)\+?/, $version, 2);
+	my (undef, $public, $local) = split(qr/^([0-9]+(?:\.[0-9]+)*(?:(?:a|b|rc|\.post|\.dev)[0-9]+)*)\+?/, $version, 2);
 	return $version if !$local;
 
 	my $sanitized_local = $local;
