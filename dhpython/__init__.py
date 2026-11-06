@@ -82,10 +82,12 @@ fi""",
 }
 
 # Delete in dh_python3 and pybuild clean
-CACHE_DIRECTORIES = frozenset({
-    ".cache",
-    ".coverage",
-    ".hypothesis",
-    ".pdm-build",
-    ".pytest_cache",
-})
+CACHE_DIRECTORIES = frozenset(
+    {
+        ".cache",
+        ".coverage",
+        ".hypothesis",
+        ".pdm-build",
+        ".pytest_cache",
+    }
+)
