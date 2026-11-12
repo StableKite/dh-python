@@ -1,6 +1,7 @@
 Source: dh-python
 Section: python
-Maintainer: Piotr Ożarowski <piotr@debian.org>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Piotr Ożarowski <piotr@debian.org>
 Uploaders:
  Stefano Rivera <stefanor@debian.org>,
 Build-Depends:
