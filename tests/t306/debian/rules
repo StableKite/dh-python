@@ -11,7 +11,7 @@ override_dh_auto_build:
 	python3 setup.py build
 
 override_dh_auto_install:
-	python3 setup.py install --root=debian/foo/ --install-lib=/usr/share/foo/python
+	python3 setup.py install --root=debian/foo/ --prefix=/usr --install-lib=/usr/share/foo/python
 
 override_dh_auto_clean:
 	rm -rf build Foo.egg-info

@@ -3,7 +3,7 @@
 	dh $@
 
 override_dh_auto_install:
-	python3 setup.py install --root=debian/python3-foo/
+	python3 setup.py install --root=debian/python3-foo/ --prefix=/usr --install-lib=/usr/lib/python3/dist-packages
 	# Leave some coverage droppings
 	mkdir -p debian/python3-foo/usr/lib/python3/dist-packages
 	/usr/bin/printf '\xe2\x28\xa1' > debian/python3-foo/usr/lib/python3/dist-packages/.coverage

@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 import logging
+import subprocess
 from collections.abc import Callable
 from functools import wraps
 from glob import glob
@@ -75,10 +76,22 @@ def create_pydistutils_cfg(
                          'build_lib={}\n'.format(args.build_dir),
                          '[install]\n',
                          'force=1\n',
-                         'install_layout=deb\n',
                          'install_scripts=$base/bin\n',
                          'install_lib={}\n'.format(args.install_dir),
                          'prefix=/usr\n']
+                # The option is provided by Debian, not by upstream
+                # distutils/setuptools. Explicit prefix/install_lib already
+                # define the package layout for an unpatched interpreter.
+                probe = (
+                    'from distutils.command.install import install; '
+                    'print(int(any(option[0] == "install-layout=" '
+                    'for option in install.user_options)))'
+                )
+                supports_layout = subprocess.check_output(
+                    [args.interpreter.binary_dv, '-c', probe], text=True,
+                ).strip()
+                if supports_layout == '1':
+                    lines.append('install_layout=deb\n')
                 log.debug('pydistutils config file:\n%s', ''.join(lines))
                 fp.writelines(lines)
         context.ENV['HOME'] = args.home_dir

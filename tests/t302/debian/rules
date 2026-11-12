@@ -24,7 +24,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	for ver in $(PYTHONS); do\
-	  python$$ver setup.py install --root=debian/python3-foo;\
+	  python$$ver setup.py install --root=debian/python3-foo --prefix=/usr/local --install-lib=/usr/local/lib/python$$ver/dist-packages;\
 	done
 	mkdir -p debian/python3-foo/usr/include/python$(DEBPYTHON3_DEFAULT)/
 	touch debian/python3-foo/usr/include/python$(DEBPYTHON3_DEFAULT)/foo.h

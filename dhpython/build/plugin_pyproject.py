@@ -200,9 +200,12 @@ class BuildSystem(Base):
         try:
             paths = sysconfig.get_paths(scheme='deb_system')
         except KeyError:
-            # Debian hasn't patched sysconfig schemes until 3.10
-            # TODO: Introduce a version check once sysconfig is patched.
-            paths = sysconfig.get_paths(scheme='posix_prefix')
+            # Vanilla interpreters can also lack Debian's named scheme.
+            # Wheel extras belong below the package's /usr prefix, not the
+            # interpreter's own (possibly private) installation prefix.
+            paths = sysconfig.get_paths(
+                scheme='posix_prefix', vars={'base': '/usr', 'platbase': '/usr'},
+            )
 
         # start by copying the data, scripts, and headers
         for extra in ('data', 'scripts', 'include'):
