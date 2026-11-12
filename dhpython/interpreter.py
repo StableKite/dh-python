@@ -51,7 +51,7 @@ EXTFILE_RE = re.compile(
     (?P<name>.*?)
     (?:\.
         (?:
-            (?P<stableabi>abi\d+)
+            (?P<stableabi>abi\d+t?)
             |(?P<soabi>
                 (?P<impl>cpython|pypy)
                 -
@@ -412,6 +412,9 @@ class Interpreter:
             # We added support for stableabi multiarch filenames in 3.13
             # (GH-122931)
             return None
+        if info["stableabi"] == "abi3t" and version < Version("3.15"):
+            # PEP 803 introduces the free-threaded stable ABI in Python 3.15.
+            return None
         if info["debug"] and self.debug is False:
             # do not change Python 2.X extensions already marked as debug
             # (the other way around is acceptable)
@@ -427,6 +430,11 @@ class Interpreter:
             return None
 
         if info["soabi"] and soabi and info["soabi"] != soabi:
+            return None
+
+        if info["stableabi"] == "abi3" and re.fullmatch(
+            r"cpython-\d+[a-z]*t[a-z]*", soabi
+        ):
             return None
 
         tmp_soabi = info["stableabi"] or info["soabi"] or soabi

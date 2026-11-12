@@ -2,13 +2,28 @@ import sys
 import unittest
 from os import environ
 from os.path import exists
+from unittest.mock import patch
 from dhpython.interpreter import Interpreter
+from dhpython.version import Version
 
 
 class TestInterpreter(unittest.TestCase):
     def setUp(self) -> None:
         self._triplet = environ.get("DEB_HOST_MULTIARCH")
         environ["DEB_HOST_MULTIARCH"] = "MYARCH"
+
+        # These legacy cases describe GIL-build naming, regardless of the
+        # available system interpreters or whether the test runner is FT.
+        def gil_config(
+            interpreter: Interpreter, version: str | Version | None = None
+        ) -> list[str]:
+            version = str(version or interpreter.version).replace(".", "")
+            flags = "d" if interpreter.debug else ""
+            return [f"cpython-{version}{flags}", "MYARCH", "", "", ""]
+
+        config = patch.object(Interpreter, "_get_config", gil_config)
+        config.start()
+        self.addCleanup(config.stop)
 
     def tearDown(self) -> None:
         if self._triplet:
