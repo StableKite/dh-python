@@ -21,7 +21,7 @@
 import logging
 import os
 import re
-from os.path import exists, join
+from os.path import exists, isfile, join
 from pathlib import Path
 from typing import ClassVar, NamedTuple, Self, TYPE_CHECKING
 
@@ -380,12 +380,19 @@ class Interpreter:
     @property
     def library_file(self) -> str:
         """Return libfoo.so file path."""
-        libpl, ldlibrary = self._get_config()[3:5]
+        libpl, ldlibrary, libdir = self._get_config()[3:6]
         if ldlibrary.endswith(".a"):
             # python3.1-dbg, python3.2, python3.2-dbg returned static lib
             ldlibrary = ldlibrary.replace(".a", ".so")
-        if libpl and ldlibrary:
-            return join(libpl, ldlibrary)
+        if ldlibrary:
+            config_library = join(libpl, ldlibrary) if libpl else None
+            if config_library and isfile(config_library):
+                return config_library
+            # A source-built CPython can put only the static archive in LIBPL.
+            if libdir and isfile(shared_library := join(libdir, ldlibrary)):
+                return shared_library
+            if config_library:
+                return config_library
         raise Exception(f"cannot find library file for {self}")
 
     def check_extname(self, fname: str, version: "Version | None" = None) -> str | None:
@@ -479,7 +486,7 @@ class Interpreter:
         cmd = (
             'import sysconfig as s; print("__SEP__".join(i or "" '
             "for i in s.get_config_vars("
-            '"SOABI", "MULTIARCH", "INCLUDEPY", "LIBPL", "LDLIBRARY")))'
+            '"SOABI", "MULTIARCH", "INCLUDEPY", "LIBPL", "LDLIBRARY", "LIBDIR")))'
         )
         output = self._execute(cmd, version)
         assert isinstance(output, str)
